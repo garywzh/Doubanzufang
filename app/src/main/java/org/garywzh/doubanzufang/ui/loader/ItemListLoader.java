@@ -8,11 +8,12 @@ import org.garywzh.doubanzufang.network.RequestHelper;
 public class ItemListLoader extends AsyncTaskLoader<ResponseBean> {
     private String mLocation = "海淀";
 
-    public ItemListLoader(Context context) {
+    public ItemListLoader(Context context, String location) {
         super(context);
+        mLocation = location;
     }
 
-    public void setPage(String location){
+    public void setLocation(String location){
         mLocation = location;
         onContentChanged();
     }
