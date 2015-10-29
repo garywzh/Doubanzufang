@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">豆租</string>
+    <string name="headline">豆瓣租房搜索</string>
+    <string name="action_settings">设置</string>
+    <string name="title_activity_result">ResultActivity</string>
+    <string name="search">搜索</string>
+</resources>

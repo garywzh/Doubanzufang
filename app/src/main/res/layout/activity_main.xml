@@ -6,20 +6,21 @@
     android:gravity="center_horizontal">
 
     <TextView
-        android:text="DOUBANZUFANG"
+        android:text="@string/headline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="112dp"
+        android:layout_marginTop="96dp"
         style="@style/TextAppearance.AppCompat.Display1" />
 
-    <EditText
-        android:id="@+id/et_search"
-        android:layout_marginTop="56dp"
+    <android.support.v7.widget.SearchView
+        android:id="@+id/searchview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="72dp"/>
     <Button
         android:id="@+id/bt_search"
-        android:text="search"
+        android:text="@string/search"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"/>
 </LinearLayout>
