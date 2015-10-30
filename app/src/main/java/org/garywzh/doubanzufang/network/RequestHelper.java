@@ -10,12 +10,10 @@ import org.garywzh.doubanzufang.common.exception.ConnectionException;
 import org.garywzh.doubanzufang.common.exception.RemoteException;
 import org.garywzh.doubanzufang.common.exception.RequestException;
 import org.garywzh.doubanzufang.model.ResponseBean;
-import org.garywzh.doubanzufang.utils.LogUtils;
-import org.garywzh.doubanzufang.utils.UTF8EncoderUtil;
+import org.garywzh.doubanzufang.util.LogUtils;
+import org.garywzh.doubanzufang.util.UTF8EncoderUtil;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**

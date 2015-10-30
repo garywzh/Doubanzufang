@@ -20,16 +20,22 @@
         <item name="searchViewStyle">@style/BackgroundColorSearchView</item>
     </style>
 
-    <style name="WhiteSearchView" parent="Widget.AppCompat.SearchView">
+    <style name="BaseSearchViewStyle" parent="Widget.AppCompat.SearchView"/>
+
+    <style name="WhiteSearchView" parent="BaseSearchViewStyle">
         <item name="queryBackground">@android:color/white</item>
     </style>
 
-    <style name="BackgroundColorSearchView" parent="Widget.AppCompat.SearchView">
+    <style name="BackgroundColorSearchView" parent="BaseSearchViewStyle">
         <item name="queryBackground">?android:colorBackground</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="HeadLine" parent="TextAppearance.AppCompat.Display1">
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
 
 </resources>

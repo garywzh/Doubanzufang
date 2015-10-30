@@ -1,4 +1,4 @@
-package org.garywzh.doubanzufang.utils;
+package org.garywzh.doubanzufang.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;

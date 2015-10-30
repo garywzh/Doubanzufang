@@ -1,6 +1,4 @@
 <resources>>
 
-    <style name="AppTheme.BackgroundColorSearchView" parent="AppTheme">
-        <item name="queryBackground">@android:color/white</item>
-    </style>
+    <style name="BackgroundColorSearchView" parent="WhiteSearchView"/>
 </resources>

@@ -1,4 +1,4 @@
-package org.garywzh.doubanzufang.utils;
+package org.garywzh.doubanzufang.util;
 
 import android.util.Log;
 

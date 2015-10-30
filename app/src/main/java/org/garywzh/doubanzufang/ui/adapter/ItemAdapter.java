@@ -147,6 +147,6 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         /**
          * @return should refresh data
          */
-        boolean onItemOpen(View view, Item topic);
+        boolean onItemOpen(View view, Item item);
     }
 }

@@ -1,9 +1,10 @@
 package org.garywzh.doubanzufang.ui;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -13,15 +14,17 @@ import android.support.v7.widget.SearchView;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import org.garywzh.doubanzufang.R;
+import org.garywzh.doubanzufang.helper.CustomTabsHelper;
 import org.garywzh.doubanzufang.model.Item;
 import org.garywzh.doubanzufang.model.ResponseBean;
 import org.garywzh.doubanzufang.ui.adapter.ItemAdapter;
 import org.garywzh.doubanzufang.ui.loader.AsyncTaskLoader;
 import org.garywzh.doubanzufang.ui.loader.ItemListLoader;
-import org.garywzh.doubanzufang.utils.LogUtils;
+import org.garywzh.doubanzufang.util.LogUtils;
 
 public class ResultActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<AsyncTaskLoader.LoaderResult<ResponseBean>>, ItemAdapter.OnItemActionListener {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -50,6 +53,12 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
         searchCard = (CardView) findViewById(R.id.cv_search);
         searchView = (SearchView) searchCard.findViewById(R.id.searchview);
         searchView.onActionViewExpanded();
+
+//        change text color
+        EditText searchEditText = (EditText) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+        searchEditText.setTextColor(ContextCompat.getColor(this, R.color.search_text));
+        searchEditText.setHintTextColor(ContextCompat.getColor(this, R.color.hint_text));
+
         searchView.setQueryHint("输入地点");
         searchView.setQuery(mLocation, false);
         searchView.clearFocus();
@@ -106,7 +115,7 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     public void onLoadFinished(Loader<AsyncTaskLoader.LoaderResult<ResponseBean>> loader, AsyncTaskLoader.LoaderResult<ResponseBean> result) {
         if (result.hasException()) {
-            Toast.makeText(this, "视频列表加载失败 - 网络错误", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "结果列表加载失败 - 网络错误", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -124,10 +133,13 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     @Override
-    public boolean onItemOpen(View view, Item topic) {
-        Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setData(Uri.parse(Item.buildUrlFromId(topic.tid)));
-        startActivity(i);
+    public boolean onItemOpen(View view, Item item) {
+
+//        chrome custom tabs
+        final Uri uri = Uri.parse(Item.buildUrlFromId(item.tid));
+        final CustomTabsIntent.Builder builder = CustomTabsHelper.getBuilder(ResultActivity.this);
+        builder.build().launchUrl(ResultActivity.this, uri);
+
         return true;
     }
 

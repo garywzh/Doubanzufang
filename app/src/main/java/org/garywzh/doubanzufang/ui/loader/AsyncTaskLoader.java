@@ -2,7 +2,7 @@ package org.garywzh.doubanzufang.ui.loader;
 
 import android.content.Context;
 
-import org.garywzh.doubanzufang.utils.LogUtils;
+import org.garywzh.doubanzufang.util.LogUtils;
 
 import java.util.concurrent.TimeUnit;
 

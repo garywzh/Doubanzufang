@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="96dp"
-        style="@style/TextAppearance.AppCompat.Display1" />
+        style="@style/HeadLine" />
 
     <android.support.v7.widget.SearchView
         android:id="@+id/searchview"
@@ -20,7 +20,8 @@
     <Button
         android:id="@+id/bt_search"
         android:text="@string/search"
+        android:textColor="@color/colorPrimary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="12dp"/>
 </LinearLayout>
