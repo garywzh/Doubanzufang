@@ -3,5 +3,6 @@
     <string name="headline">DoubanRentingSearch</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_result">ResultActivity</string>
-    <string name="search">search</string>
+    <string name="search">SEARCH</string>
+    <string name="title_update">"Data update time: "</string>
 </resources>

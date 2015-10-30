@@ -10,12 +10,22 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme" parent="AppBaseTheme">
-        <item name="searchViewStyle">@style/MySearchViewStyle</item>
+    <style name="AppTheme" parent="AppBaseTheme"/>
+
+    <style name="AppTheme.WhiteSearchView" parent="AppTheme">
+        <item name="searchViewStyle">@style/WhiteSearchView</item>
     </style>
 
-    <style name="MySearchViewStyle" parent="Widget.AppCompat.SearchView">
+    <style name="AppTheme.BackgroundColorSearchView" parent="AppTheme">
+        <item name="searchViewStyle">@style/BackgroundColorSearchView</item>
+    </style>
+
+    <style name="WhiteSearchView" parent="Widget.AppCompat.SearchView">
         <item name="queryBackground">@android:color/white</item>
+    </style>
+
+    <style name="BackgroundColorSearchView" parent="Widget.AppCompat.SearchView">
+        <item name="queryBackground">?android:colorBackground</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

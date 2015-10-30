@@ -1,5 +1,6 @@
 package org.garywzh.doubanzufang.ui.adapter;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 
 import org.garywzh.doubanzufang.R;
 import org.garywzh.doubanzufang.model.Item;
+import org.garywzh.doubanzufang.model.ResponseBean;
 
 import java.util.List;
 
@@ -17,14 +19,16 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_ITEM = 1;
     private final OnItemActionListener mListener;
     private List<Item> mData;
+    private String mUpdateTime;
 
     public ItemAdapter(@NonNull OnItemActionListener listener) {
         mListener = listener;
         setHasStableIds(true);
     }
 
-    public void setDataSource(List<Item> data) {
-        mData = data;
+    public void setDataSource(ResponseBean responseBean) {
+        mData = responseBean.items;
+        mUpdateTime = responseBean.last_update_time;
         notifyDataSetChanged();
     }
 
@@ -51,6 +55,7 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ((VHItem) holder).fillData(item);
         } else if (holder instanceof VHHeader) {
             //cast holder to VHHeader and set data for header.
+            ((VHHeader) holder).fillData(mUpdateTime);
         }
     }
 
@@ -126,8 +131,15 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public static class VHHeader extends RecyclerView.ViewHolder {
 
-        public VHHeader(View itemView) {
-            super(itemView);
+        public TextView mUpdateTime;
+        public VHHeader(View headerView) {
+            super(headerView);
+
+            mUpdateTime = ((TextView) headerView.findViewById(R.id.tv_updatetime));
+        }
+
+        public void fillData(String updateTime){
+            mUpdateTime.setText("数据更新时间: " + updateTime);
         }
     }
 

@@ -4,4 +4,5 @@
     <string name="action_settings">设置</string>
     <string name="title_activity_result">ResultActivity</string>
     <string name="search">搜索</string>
+    <string name="title_update">"数据更新时间: "</string>
 </resources>

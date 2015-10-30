@@ -6,10 +6,13 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Toast;
 
 import org.garywzh.doubanzufang.R;
@@ -24,10 +27,11 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private RecyclerView recyclerView;
-    private SearchView searchView;
     private LinearLayoutManager linearLayoutManager;
+    private SearchView searchView;
     private ItemAdapter mAdapter;
     private String mLocation;
+    private CardView searchCard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,25 +40,62 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
 
         mLocation = getIntent().getStringExtra("location");
 
+        initSearchCard();
+        initRecyclerView();
+
+        getSupportLoaderManager().initLoader(0, null, this);
+    }
+
+    private void initSearchCard() {
+        searchCard = (CardView) findViewById(R.id.cv_search);
+        searchView = (SearchView) searchCard.findViewById(R.id.searchview);
+        searchView.onActionViewExpanded();
+        searchView.setQueryHint("输入地点");
+        searchView.setQuery(mLocation, false);
+        searchView.clearFocus();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if (query.isEmpty()) {
+                    Toast.makeText(getBaseContext(), "请输入地点", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+
+                getLoader().setLocation(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+    }
+
+    private void initRecyclerView() {
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
         linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
-
         mAdapter = new ItemAdapter(this);
         recyclerView.setAdapter(mAdapter);
 
-        searchView = (SearchView) findViewById(R.id.searchview);
-        searchView.onActionViewExpanded();
-        searchView.setQuery(mLocation, false);
-        searchView.clearFocus();
-        searchView.setOnSearchClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String location = searchView.getQuery().toString();
+        recyclerView.setOnScrollListener(new HidingScrollListener() {
 
+            @Override
+            public void onMoved(int distance) {
+                searchCard.setTranslationY(-distance);
+            }
+
+            @Override
+            public void onShow() {
+                searchCard.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
+            }
+
+            @Override
+            public void onHide() {
+                searchCard.animate().translationY(-mSearchViewHeight).setInterpolator(new AccelerateInterpolator(2)).start();
             }
         });
-        getSupportLoaderManager().initLoader(0, null, this);
     }
 
     @Override
@@ -69,7 +110,8 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
             return;
         }
 
-        mAdapter.setDataSource(result.mResult.items);
+        mAdapter.setDataSource(result.mResult);
+        linearLayoutManager.scrollToPositionWithOffset(0, 0);
     }
 
     @Override
@@ -87,5 +129,72 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
         i.setData(Uri.parse(Item.buildUrlFromId(topic.tid)));
         startActivity(i);
         return true;
+    }
+
+    public abstract class HidingScrollListener extends RecyclerView.OnScrollListener {
+
+        private static final float THRESHOLD = 90;
+
+        private int mSearchVIewOffset = 0;
+        public int mSearchViewHeight = 160;
+        private int mTotalScrolledDistance;
+
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+
+            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                if (mTotalScrolledDistance < mSearchViewHeight) {
+                    setVisible();
+                } else {
+                    if (mSearchVIewOffset > THRESHOLD) {
+                        setInvisible();
+                    } else {
+                        setVisible();
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+
+            if ((mSearchVIewOffset < mSearchViewHeight && dy > 0) || (mSearchVIewOffset > 0 && dy < 0)) {
+                mSearchVIewOffset += dy;
+                clipSearchViewOffset();
+                onMoved(mSearchVIewOffset);
+            }
+
+            mTotalScrolledDistance += dy;
+        }
+
+        private void clipSearchViewOffset() {
+            if (mSearchVIewOffset > mSearchViewHeight) {
+                mSearchVIewOffset = mSearchViewHeight;
+            } else if (mSearchVIewOffset < 0) {
+                mSearchVIewOffset = 0;
+            }
+        }
+
+        private void setVisible() {
+            if (mSearchVIewOffset > 0) {
+                onShow();
+                mSearchVIewOffset = 0;
+            }
+        }
+
+        private void setInvisible() {
+            if (mSearchVIewOffset < mSearchViewHeight) {
+                onHide();
+                mSearchVIewOffset = mSearchViewHeight;
+            }
+        }
+
+        public abstract void onMoved(int distance);
+
+        public abstract void onShow();
+
+        public abstract void onHide();
     }
 }
