@@ -1,6 +1,5 @@
 package org.garywzh.doubanzufang.ui.adapter;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -132,13 +131,14 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static class VHHeader extends RecyclerView.ViewHolder {
 
         public TextView mUpdateTime;
+
         public VHHeader(View headerView) {
             super(headerView);
 
             mUpdateTime = ((TextView) headerView.findViewById(R.id.tv_updatetime));
         }
 
-        public void fillData(String updateTime){
+        public void fillData(String updateTime) {
             mUpdateTime.setText("数据更新时间: " + updateTime);
         }
     }
