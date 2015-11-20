@@ -17,8 +17,7 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_ITEM = 1;
     private final OnItemActionListener mListener;
-    private List<Item> mData;
-    private String mUpdateTime;
+    private ResponseBean mResponseBean;
 
     public ItemAdapter(@NonNull OnItemActionListener listener) {
         mListener = listener;
@@ -26,8 +25,7 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void setDataSource(ResponseBean responseBean) {
-        mData = responseBean.items;
-        mUpdateTime = responseBean.last_update_time;
+        mResponseBean = responseBean;
         notifyDataSetChanged();
     }
 
@@ -50,22 +48,22 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof VHItem) {
-            final Item item = mData.get(position - 1);
+            final Item item = mResponseBean.items.get(position - 1);
             ((VHItem) holder).fillData(item);
         } else if (holder instanceof VHHeader) {
             //cast holder to VHHeader and set data for header.
-            ((VHHeader) holder).fillData(mUpdateTime);
+            ((VHHeader) holder).fillData(mResponseBean);
         }
     }
 
     @Override
     public long getItemId(int position) {
-        return position == 0 ? 1 : Integer.parseInt(mData.get(position - 1).aid);
+        return position == 0 ? 1 : Integer.parseInt(mResponseBean.items.get(position - 1).tid);
     }
 
     @Override
     public int getItemCount() {
-        return mData == null ? 1 : mData.size() + 1;
+        return mResponseBean == null ? 1 : mResponseBean.items.size() + 1;
     }
 
     @Override
@@ -138,8 +136,13 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             mUpdateTime = ((TextView) headerView.findViewById(R.id.tv_updatetime));
         }
 
-        public void fillData(String updateTime) {
-            mUpdateTime.setText("数据更新时间: " + updateTime);
+        public void fillData(ResponseBean responseBean) {
+            if (responseBean == null){
+                mUpdateTime.setText("数据加载中...");
+
+            }else {
+                mUpdateTime.setText("数据更新时间: " + responseBean.last_update_time);
+            }
         }
     }
 

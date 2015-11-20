@@ -1,5 +1,7 @@
 package org.garywzh.doubanzufang.model;
 
+import com.google.common.base.Objects;
+
 /**
  * Created by WZH on 2015/10/28.
  */
@@ -15,5 +17,19 @@ public class Item {
 
     public static String buildUrlFromId(String tid) {
         return "http://www.douban.com/group/topic/" + tid;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Item)) return false;
+        Item item = (Item) o;
+        return Objects.equal(ttl, item.ttl)
+                && Objects.equal(anm, item.anm);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(ttl, anm);
     }
 }

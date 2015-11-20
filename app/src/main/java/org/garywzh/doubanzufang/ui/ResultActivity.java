@@ -125,6 +125,7 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
 
     @Override
     public void onLoaderReset(Loader<AsyncTaskLoader.LoaderResult<ResponseBean>> loader) {
+        mAdapter.setDataSource(null);
         LogUtils.d(TAG, "onLoaderReset called");
     }
 

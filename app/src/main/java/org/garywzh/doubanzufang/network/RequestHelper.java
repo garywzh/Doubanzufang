@@ -9,11 +9,16 @@ import com.squareup.okhttp.Response;
 import org.garywzh.doubanzufang.common.exception.ConnectionException;
 import org.garywzh.doubanzufang.common.exception.RemoteException;
 import org.garywzh.doubanzufang.common.exception.RequestException;
+import org.garywzh.doubanzufang.model.Item;
 import org.garywzh.doubanzufang.model.ResponseBean;
 import org.garywzh.doubanzufang.util.LogUtils;
 import org.garywzh.doubanzufang.util.UTF8EncoderUtil;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -56,16 +61,22 @@ public class RequestHelper {
         try {
             final String json = response.body().string();
 
-//            responseObj = getGson().fromJson(json, new TypeToken<ArrayList<Item>>(){}.getType());
             responseBean = getGson().fromJson(json, new TypeToken<ResponseBean>(){}.getType());
 
         } catch (IOException e) {
             throw new ConnectionException(e);
         }
 
+        /*remove duplicates*/
+        final List<Item> items = responseBean.items;
+        final Set<Item> setItems = new LinkedHashSet<>(items);
+        items.clear();
+        items.addAll(setItems);
+
+        LogUtils.d(TAG, "items count: "+items.size());
+
         return responseBean;
     }
-
 
     static Response sendRequest(Request request) throws ConnectionException, RemoteException {
 
