@@ -9,16 +9,11 @@ import com.squareup.okhttp.Response;
 import org.garywzh.doubanzufang.common.exception.ConnectionException;
 import org.garywzh.doubanzufang.common.exception.RemoteException;
 import org.garywzh.doubanzufang.common.exception.RequestException;
-import org.garywzh.doubanzufang.model.Item;
 import org.garywzh.doubanzufang.model.ResponseBean;
 import org.garywzh.doubanzufang.util.LogUtils;
 import org.garywzh.doubanzufang.util.UTF8EncoderUtil;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -27,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 public class RequestHelper {
     private static final String TAG = RequestHelper.class.getSimpleName();
 
-    public static final String BASE_URL = "http://www.bpzufang.com/douban/";
+    public static final String BASE_URL = "http://www.bpzufang.com/douban";
 
     private static final OkHttpClient CLIENT;
 
@@ -43,13 +38,13 @@ public class RequestHelper {
         GSON = new Gson();
     }
 
-    private static Gson getGson(){
+    private static Gson getGson() {
         return GSON;
     }
 
-    public static ResponseBean getItemsList(String location) throws ConnectionException, RemoteException {
+    public static ResponseBean getItemsList(String location, String sp) throws ConnectionException, RemoteException {
 
-        final String searchUrl = "http://www.bpzufang.com/douban/search.php?kw=" + UTF8EncoderUtil.encode(location) + "&sp=0";
+        final String searchUrl = "http://www.bpzufang.com/douban/search.php?kw=" + UTF8EncoderUtil.encode(location) + "&sp=" + sp;
 
         final Request request = new Request.Builder()
                 .url(searchUrl)
@@ -61,19 +56,12 @@ public class RequestHelper {
         try {
             final String json = response.body().string();
 
-            responseBean = getGson().fromJson(json, new TypeToken<ResponseBean>(){}.getType());
+            responseBean = getGson().fromJson(json, new TypeToken<ResponseBean>() {
+            }.getType());
 
         } catch (IOException e) {
             throw new ConnectionException(e);
         }
-
-        /*remove duplicates*/
-        final List<Item> items = responseBean.items;
-        final Set<Item> setItems = new LinkedHashSet<>(items);
-        items.clear();
-        items.addAll(setItems);
-
-        LogUtils.d(TAG, "items count: "+items.size());
 
         return responseBean;
     }

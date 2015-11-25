@@ -29,11 +29,14 @@ import org.garywzh.doubanzufang.util.LogUtils;
 public class ResultActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<AsyncTaskLoader.LoaderResult<ResponseBean>>, ItemAdapter.OnItemActionListener {
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
     private SearchView searchView;
     private ItemAdapter mAdapter;
     private String mLocation;
+    public String mSp;
+    public boolean requireScrollToTop = false;
+    private boolean onLoading;
+    public boolean noMore = false;
     private CardView searchCard;
 
     @Override
@@ -46,6 +49,9 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
         initSearchCard();
         initRecyclerView();
 
+        mSp = "0";
+
+        onLoading = true;
         getSupportLoaderManager().initLoader(0, null, this);
     }
 
@@ -70,7 +76,10 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
                     return false;
                 }
 
-                getLoader().setLocation(query);
+                searchView.clearFocus();
+                mLocation = query;
+                mSp = "0";
+                getLoader().setParams(mLocation, mSp);
                 return false;
             }
 
@@ -82,13 +91,13 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     private void initRecyclerView() {
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
+        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
         linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
         mAdapter = new ItemAdapter(this);
         recyclerView.setAdapter(mAdapter);
 
-        recyclerView.setOnScrollListener(new HidingScrollListener() {
+        recyclerView.addOnScrollListener(new HidingScrollListener() {
 
             @Override
             public void onMoved(int distance) {
@@ -119,8 +128,15 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
             return;
         }
 
+        if (requireScrollToTop) {
+            linearLayoutManager.scrollToPositionWithOffset(0, 0);
+            requireScrollToTop = false;
+        }
+
         mAdapter.setDataSource(result.mResult);
-        linearLayoutManager.scrollToPositionWithOffset(0, 0);
+
+        onLoading = false;
+        LogUtils.d(TAG, "onLoadFinished called");
     }
 
     @Override
@@ -171,8 +187,6 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
 
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            super.onScrolled(recyclerView, dx, dy);
-
             if ((mSearchVIewOffset < mSearchViewHeight && dy > 0) || (mSearchVIewOffset > 0 && dy < 0)) {
                 mSearchVIewOffset += dy;
                 clipSearchViewOffset();
@@ -180,6 +194,23 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
             }
 
             mTotalScrolledDistance += dy;
+
+            if (!onLoading && !noMore) {
+                int visibleItemCount = linearLayoutManager.getChildCount();
+                int totalItemCount = linearLayoutManager.getItemCount();
+                int pastItems = linearLayoutManager.findFirstVisibleItemPosition();
+                if ((pastItems + visibleItemCount) >= (totalItemCount - 10)) {
+
+                    LogUtils.d(TAG, "scrolled to bottom, loading more");
+                    onLoading = true;
+
+                    final ItemListLoader loader = getLoader();
+                    if (loader == null) {
+                        return;
+                    }
+                    loader.setParams(mLocation, mSp);
+                }
+            }
         }
 
         private void clipSearchViewOffset() {
