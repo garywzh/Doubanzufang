@@ -1,8 +1,10 @@
 <resources>
-    <string name="app_name">DouZu</string>
-    <string name="headline">DoubanRentingSearch</string>
+    <string name="app_name">BeiPiaoZufang</string>
+    <string name="headline">BeipiaoRentingSearch</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_result">ResultActivity</string>
     <string name="search">SEARCH</string>
     <string name="title_update">"Data update time: "</string>
+    <string name="subhead">gathering douban groups rending imformation</string>
+    <string name="toast_loading_more">Loading more</string>
 </resources>

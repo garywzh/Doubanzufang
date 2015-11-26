@@ -38,4 +38,8 @@
         <item name="android:textColor">@color/colorPrimary</item>
     </style>
 
+    <style name="Subhead" parent="TextAppearance.AppCompat.Subhead">
+        <item name="android:textColor">@color/hint_text</item>
+    </style>
+
 </resources>

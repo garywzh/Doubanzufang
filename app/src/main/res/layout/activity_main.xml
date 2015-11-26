@@ -12,6 +12,13 @@
         android:layout_marginTop="96dp"
         style="@style/HeadLine" />
 
+    <TextView
+        android:text="@string/subhead"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        style="@style/Subhead" />
+
     <android.support.v7.widget.SearchView
         android:id="@+id/searchview"
         android:layout_width="match_parent"

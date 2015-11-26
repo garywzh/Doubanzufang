@@ -1,8 +1,10 @@
 <resources>
-    <string name="app_name">豆租</string>
-    <string name="headline">豆瓣租房搜索</string>
+    <string name="app_name">北漂租房</string>
+    <string name="headline">北漂租房搜索</string>
     <string name="action_settings">设置</string>
     <string name="title_activity_result">ResultActivity</string>
     <string name="search">搜索</string>
     <string name="title_update">"数据更新时间: "</string>
+    <string name="subhead">聚合豆瓣小组租房信息</string>
+    <string name="toast_loading_more">正在加载更多租房信息</string>
 </resources>

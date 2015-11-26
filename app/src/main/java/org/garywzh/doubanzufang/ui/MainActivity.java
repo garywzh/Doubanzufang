@@ -10,6 +10,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.umeng.analytics.MobclickAgent;
+
 import org.garywzh.doubanzufang.R;
 
 public class MainActivity extends AppCompatActivity {
@@ -46,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
         searchView.setQueryHint("输入地点");
 //        test
-        searchView.setQuery(TEST_LOCATION, false);
+//        searchView.setQuery(TEST_LOCATION, false);
 
         searchView.clearFocus();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -74,5 +76,17 @@ public class MainActivity extends AppCompatActivity {
         final Intent intent = new Intent(getBaseContext(), ResultActivity.class);
         intent.putExtra("location", location);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

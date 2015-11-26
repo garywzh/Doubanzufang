@@ -17,6 +17,8 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.umeng.analytics.MobclickAgent;
+
 import org.garywzh.doubanzufang.R;
 import org.garywzh.doubanzufang.helper.CustomTabsHelper;
 import org.garywzh.doubanzufang.model.Item;
@@ -160,6 +162,18 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
         return true;
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
+
     public abstract class HidingScrollListener extends RecyclerView.OnScrollListener {
 
         private static final float THRESHOLD = 90;
@@ -203,6 +217,7 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
 
                     LogUtils.d(TAG, "scrolled to bottom, loading more");
                     onLoading = true;
+                    Toast.makeText(recyclerView.getContext(),getString(R.string.toast_loading_more),Toast.LENGTH_SHORT).show();
 
                     final ItemListLoader loader = getLoader();
                     if (loader == null) {

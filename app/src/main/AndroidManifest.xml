@@ -3,6 +3,9 @@
     package="org.garywzh.doubanzufang">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:allowBackup="true"
@@ -11,9 +14,18 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <!-- 友盟统计 -->
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="5656d91f67e58ea12500072e" />
+        <meta-data
+            android:name="UMENG_CHANNEL"
+            android:value="${UMENG_CHANNEL_VALUE}" />
+
         <activity
             android:name=".ui.MainActivity"
             android:label="@string/app_name"
+            android:hardwareAccelerated="true"
             android:theme="@style/AppTheme.WhiteSearchView">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
