@@ -15,6 +15,16 @@ public class Item {
     public String dgd;
 
 
+    public Item(String tid, String aid, String ttl, String tcr, String anm, String gnm, String dgd) {
+        this.tid = tid;
+        this.aid = aid;
+        this.ttl = ttl;
+        this.tcr = tcr;
+        this.anm = anm;
+        this.gnm = gnm;
+        this.dgd = dgd;
+    }
+
     public static String buildUrlFromId(String tid) {
         return "http://www.douban.com/group/topic/" + tid;
     }

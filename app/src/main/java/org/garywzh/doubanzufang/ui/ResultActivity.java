@@ -1,11 +1,15 @@
 package org.garywzh.doubanzufang.ui;
 
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,12 +24,14 @@ import android.widget.Toast;
 import com.umeng.analytics.MobclickAgent;
 
 import org.garywzh.doubanzufang.R;
+import org.garywzh.doubanzufang.dao.ItemDao;
 import org.garywzh.doubanzufang.helper.CustomTabsHelper;
 import org.garywzh.doubanzufang.model.Item;
 import org.garywzh.doubanzufang.model.ResponseBean;
 import org.garywzh.doubanzufang.ui.adapter.ItemAdapter;
 import org.garywzh.doubanzufang.ui.loader.AsyncTaskLoader;
 import org.garywzh.doubanzufang.ui.loader.ItemListLoader;
+import org.garywzh.doubanzufang.ui.widget.DividerItemDecoration;
 import org.garywzh.doubanzufang.util.LogUtils;
 
 public class ResultActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<AsyncTaskLoader.LoaderResult<ResponseBean>>, ItemAdapter.OnItemActionListener {
@@ -96,6 +102,7 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
         linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
         mAdapter = new ItemAdapter(this);
         recyclerView.setAdapter(mAdapter);
 
@@ -116,6 +123,7 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
                 searchCard.animate().translationY(-mSearchViewHeight).setInterpolator(new AccelerateInterpolator(2)).start();
             }
         });
+
     }
 
     @Override
@@ -160,6 +168,19 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
         builder.build().launchUrl(ResultActivity.this, uri);
 
         return true;
+    }
+
+    @Override
+    public void onItemLongClick(View view, final Item item) {
+
+        OnDialogClickListener onDialogClickListener = new OnDialogClickListener(this, item);
+        new AlertDialog.Builder(ResultActivity.this)
+                .setMessage("添加到收藏列表")
+                .setTitle("收藏？")
+                .setPositiveButton("确认", onDialogClickListener)
+                .setNegativeButton("取消", onDialogClickListener)
+                .create()
+                .show();
     }
 
     @Override
@@ -217,7 +238,7 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
 
                     LogUtils.d(TAG, "scrolled to bottom, loading more");
                     onLoading = true;
-                    Toast.makeText(recyclerView.getContext(),getString(R.string.toast_loading_more),Toast.LENGTH_SHORT).show();
+                    Toast.makeText(recyclerView.getContext(), getString(R.string.toast_loading_more), Toast.LENGTH_LONG).show();
 
                     final ItemListLoader loader = getLoader();
                     if (loader == null) {
@@ -255,5 +276,39 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
         public abstract void onShow();
 
         public abstract void onHide();
+    }
+
+    class OnDialogClickListener implements DialogInterface.OnClickListener {
+        private final Item item;
+        private final Activity activity;
+
+        public OnDialogClickListener(Activity activity, Item item) {
+            super();
+            this.item = item;
+            this.activity = activity;
+        }
+
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            switch (which) {
+                case Dialog.BUTTON_NEGATIVE:
+                    break;
+                case Dialog.BUTTON_POSITIVE:
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ItemDao.put(item);
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(activity, R.string.toast_save_succeed, Toast.LENGTH_SHORT)
+                                            .show();
+                                }
+                            });
+                        }
+                    }).start();
+                    break;
+            }
+        }
     }
 }

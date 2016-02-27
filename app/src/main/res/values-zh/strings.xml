@@ -7,4 +7,8 @@
     <string name="title_update">"数据更新时间: "</string>
     <string name="subhead">聚合豆瓣小组租房信息</string>
     <string name="toast_loading_more">正在加载更多租房信息</string>
+    <string name="title_activity_fav">收藏</string>
+    <string name="action_fav">收藏</string>
+    <string name="toast_save_succeed">收藏成功</string>
+    <string name="action_delete">删除</string>
 </resources>

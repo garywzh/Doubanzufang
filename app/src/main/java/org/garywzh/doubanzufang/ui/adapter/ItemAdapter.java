@@ -11,8 +11,6 @@ import org.garywzh.doubanzufang.R;
 import org.garywzh.doubanzufang.model.Item;
 import org.garywzh.doubanzufang.model.ResponseBean;
 
-import java.util.List;
-
 public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_ITEM = 1;
@@ -78,7 +76,7 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return position == 0;
     }
 
-    public static class VHItem extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class VHItem extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
         public final TextView mTitle;
         public final TextView mTime;
@@ -97,6 +95,7 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             mListener = listener;
 
             view.setOnClickListener(this);
+            view.setOnLongClickListener(this);
 
             mTitle = ((TextView) view.findViewById(R.id.tv_title));
             mTime = ((TextView) view.findViewById(R.id.tv_time));
@@ -121,8 +120,16 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if (mListener == null) {
                 return;
             }
-
             mListener.onItemOpen(v, mItem);
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            if (mListener == null) {
+                return false;
+            }
+            mListener.onItemLongClick(v, mItem);
+            return true;
         }
     }
 
@@ -151,5 +158,7 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
          * @return should refresh data
          */
         boolean onItemOpen(View view, Item item);
+
+        void onItemLongClick(View view, Item item);
     }
 }

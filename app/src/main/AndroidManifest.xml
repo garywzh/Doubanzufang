@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -24,11 +25,12 @@
 
         <activity
             android:name=".ui.MainActivity"
-            android:label="@string/app_name"
             android:hardwareAccelerated="true"
+            android:label="@string/app_name"
             android:theme="@style/AppTheme.WhiteSearchView">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -36,7 +38,10 @@
         <activity
             android:name=".ui.ResultActivity"
             android:label="@string/title_activity_result"
-            android:theme="@style/AppTheme.BackgroundColorSearchView"/>
+            android:theme="@style/AppTheme.BackgroundColorSearchView" />
 
+        <activity
+            android:name=".ui.FavoriteActivity"
+            android:label="@string/title_activity_fav" />
     </application>
 </manifest>
