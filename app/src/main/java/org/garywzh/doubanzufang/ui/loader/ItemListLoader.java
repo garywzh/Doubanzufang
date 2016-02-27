@@ -1,6 +1,7 @@
 package org.garywzh.doubanzufang.ui.loader;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.garywzh.doubanzufang.model.Item;
 import org.garywzh.doubanzufang.model.ResponseBean;
@@ -33,7 +34,10 @@ public class ItemListLoader extends AsyncTaskLoader<ResponseBean> {
 
     @Override
     public ResponseBean loadInBackgroundWithException() throws Exception {
+        Log.d("itemloader", "loadinback pre");
         final ResponseBean responseBean = RequestHelper.getItemsList(mLocation, mSp);
+        Log.d("itemloader", "loadinback end");
+
         if (mSp.equals("0")) {
             mItems.clear();
             mContext.requireScrollToTop = true;

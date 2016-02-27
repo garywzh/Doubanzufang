@@ -18,6 +18,7 @@ public class CustomTabsHelper {
 
     public static int getAttrColor(Resources.Theme theme, @AttrRes int attrId) {
         final TypedValue typedValue = new TypedValue();
+
         if (!theme.resolveAttribute(attrId, typedValue, true)) {
             throw new IllegalArgumentException("can't found attr for: " + Integer.toHexString(attrId));
         }
