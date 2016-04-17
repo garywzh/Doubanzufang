@@ -1,8 +1,12 @@
-# Doubanzufang
+# 北漂租房
 
 搜索豆瓣小组北京地区房屋出租信息
 
-Google Play https://play.google.com/store/apps/details?id=org.garywzh.doubanzufang
+[![Get it on Google Play](http://www.android.com/images/brand/get_it_on_play_logo_small.png)](https://play.google.com/store/apps/details?id=org.garywzh.doubanzufang)
+
+or
+
+http://fir.im/fl72
 
 # FEATURE
 
