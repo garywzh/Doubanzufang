@@ -44,7 +44,6 @@ public class FavItemAdapter extends RecyclerView.Adapter<FavItemAdapter.MyViewHo
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
         //inflate your layout and pass it to view holder
         final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_item, parent, false);
         return new MyViewHolder(mListener, view, mMultiSelector);

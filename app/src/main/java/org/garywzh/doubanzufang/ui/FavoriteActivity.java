@@ -32,18 +32,14 @@ import java.util.List;
 
 public class FavoriteActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<AsyncTaskLoader.LoaderResult<List<Item>>>, FavItemAdapter.OnItemActionListener {
     private static final String TAG = FavoriteActivity.class.getSimpleName();
-
     private FavItemAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorite);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         initRecyclerView();
-
         getSupportLoaderManager().initLoader(0, null, this);
     }
 
@@ -66,9 +62,7 @@ public class FavoriteActivity extends AppCompatActivity implements LoaderManager
             Toast.makeText(this, "结果列表加载失败", Toast.LENGTH_SHORT).show();
             return;
         }
-
         mAdapter.setDataSource(result.mResult);
-
         LogUtils.d(TAG, "onLoadFinished called");
     }
 
@@ -80,7 +74,6 @@ public class FavoriteActivity extends AppCompatActivity implements LoaderManager
 
     @Override
     public boolean onItemOpen(View view, Item item) {
-
 //        chrome custom tabs
         final Uri uri = Uri.parse(Item.buildUrlFromId(item.tid));
         final CustomTabsIntent.Builder builder = CustomTabsHelper.getBuilder(FavoriteActivity.this);
@@ -122,7 +115,6 @@ public class FavoriteActivity extends AppCompatActivity implements LoaderManager
         });
     }
 
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -143,7 +135,6 @@ public class FavoriteActivity extends AppCompatActivity implements LoaderManager
                 onBackPressed();
                 return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
