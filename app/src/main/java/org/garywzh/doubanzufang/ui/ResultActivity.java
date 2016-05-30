@@ -143,6 +143,9 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
             requireScrollToTop = false;
         }
 
+        if (noMore) {
+            mAdapter.setShowProgressBar(false);
+        }
         mAdapter.setDataSource(result.mResult);
 
         onLoading = false;
@@ -234,11 +237,10 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
                 int visibleItemCount = linearLayoutManager.getChildCount();
                 int totalItemCount = linearLayoutManager.getItemCount();
                 int pastItems = linearLayoutManager.findFirstVisibleItemPosition();
-                if ((pastItems + visibleItemCount) >= (totalItemCount - 10)) {
+                if ((pastItems + visibleItemCount) >= (totalItemCount - 5)) {
 
                     LogUtils.d(TAG, "scrolled to bottom, loading more");
                     onLoading = true;
-                    Toast.makeText(recyclerView.getContext(), getString(R.string.toast_loading_more), Toast.LENGTH_LONG).show();
 
                     final ItemListLoader loader = getLoader();
                     if (loader == null) {

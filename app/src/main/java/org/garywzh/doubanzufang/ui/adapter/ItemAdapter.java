@@ -14,12 +14,18 @@ import org.garywzh.doubanzufang.model.ResponseBean;
 public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_ITEM = 1;
+    private static final int TYPE_FOOTER = 2;
     private final OnItemActionListener mListener;
     private ResponseBean mResponseBean;
+    private boolean showProgressBar = true;
 
     public ItemAdapter(@NonNull OnItemActionListener listener) {
         mListener = listener;
         setHasStableIds(true);
+    }
+
+    public void setShowProgressBar(boolean show) {
+        showProgressBar = show;
     }
 
     public void setDataSource(ResponseBean responseBean) {
@@ -28,16 +34,35 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     @Override
+    public int getItemCount() {
+        return (mResponseBean == null ? 1 : mResponseBean.items.size() + 1) + (showProgressBar ? 1 : 0);
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (position == 0) {
+            return TYPE_HEADER;
+        } else if (showProgressBar && position == getItemCount() - 1) {
+            return TYPE_FOOTER;
+        } else
+            return TYPE_ITEM;
+    }
+
+    @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         if (viewType == TYPE_ITEM) {
-            //inflate your layout and pass it to view holder
+            //inflate item view holder
             final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_item, parent, false);
             return new VHItem(mListener, view);
         } else if (viewType == TYPE_HEADER) {
-            //inflate your layout and pass it to view holder
+            //inflate header view holder
             final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_header, parent, false);
             return new VHHeader(view);
+        } else if (viewType == TYPE_FOOTER) {
+            //inflate footer view holder
+            final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_footer, parent, false);
+            return new VHFooter(view);
         }
 
         throw new RuntimeException("there is no type that matches the type " + viewType + " + make sure your using types correctly");
@@ -56,24 +81,13 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public long getItemId(int position) {
-        return position == 0 ? 1 : Integer.parseInt(mResponseBean.items.get(position - 1).tid);
-    }
-
-    @Override
-    public int getItemCount() {
-        return mResponseBean == null ? 1 : mResponseBean.items.size() + 1;
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        if (isPositionHeader(position))
-            return TYPE_HEADER;
-
-        return TYPE_ITEM;
-    }
-
-    private boolean isPositionHeader(int position) {
-        return position == 0;
+        if (position == 0) {
+            return 1;
+        } else if (showProgressBar && position == getItemCount() - 1) {
+            return 2;
+        } else {
+            return Integer.parseInt(mResponseBean.items.get(position - 1).tid);
+        }
     }
 
     public static class VHItem extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
@@ -144,12 +158,19 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
         public void fillData(ResponseBean responseBean) {
-            if (responseBean == null){
-                mUpdateTime.setText("数据加载中...");
+            if (responseBean == null) {
+                mUpdateTime.setText("暂无数据");
 
-            }else {
+            } else {
                 mUpdateTime.setText("数据更新时间: " + responseBean.last_update_time);
             }
+        }
+    }
+
+    public static class VHFooter extends RecyclerView.ViewHolder {
+
+        public VHFooter(View footerView) {
+            super(footerView);
         }
     }
 
