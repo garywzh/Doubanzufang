@@ -44,7 +44,7 @@ public class RequestHelper {
 
     public static ResponseBean getItemsList(String location, String sp) throws ConnectionException, RemoteException {
 
-        final String searchUrl = "http://www.bpzufang.com/douban/search.php?kw=" + UTF8EncoderUtil.encode(location) + "&sp=" + sp;
+        final String searchUrl = BASE_URL + "/search.php?kw=" + UTF8EncoderUtil.encode(location) + "&sp=" + sp;
 
         final Request request = new Request.Builder()
                 .url(searchUrl)

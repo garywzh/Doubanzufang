@@ -39,15 +39,4 @@ public class DoubanzufangDb extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Preconditions.checkState(oldVersion == newVersion, "old version not match new version");
     }
-
-    /**
-     * it may use a lot of time
-     */
-    public void init() {
-        SQLiteDatabase db = getWritableDatabase();
-        if (db != null) {
-            db.close();
-        }
-    }
-
 }
