@@ -11,4 +11,6 @@
     <string name="action_fav">收藏</string>
     <string name="toast_save_succeed">收藏成功</string>
     <string name="action_delete">删除</string>
+    <string name="SNACK_FAV">已添加到收藏列表</string>
+    <string name="ACTION_UNDO">撤销</string>
 </resources>

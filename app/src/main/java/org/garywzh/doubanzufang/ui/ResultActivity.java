@@ -1,15 +1,12 @@
 package org.garywzh.doubanzufang.ui;
 
-import android.app.Activity;
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.customtabs.CustomTabsIntent;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -32,12 +29,14 @@ import org.garywzh.doubanzufang.ui.adapter.ItemAdapter;
 import org.garywzh.doubanzufang.ui.loader.AsyncTaskLoader;
 import org.garywzh.doubanzufang.ui.loader.ItemListLoader;
 import org.garywzh.doubanzufang.ui.widget.DividerItemDecoration;
+import org.garywzh.doubanzufang.util.ExecutorUtils;
 import org.garywzh.doubanzufang.util.LogUtils;
 
 public class ResultActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<AsyncTaskLoader.LoaderResult<ResponseBean>>, ItemAdapter.OnItemActionListener {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private LinearLayoutManager linearLayoutManager;
+    private View rootView;
     private SearchView searchView;
     private ItemAdapter mAdapter;
     private String mLocation;
@@ -54,6 +53,7 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
 
         mLocation = getIntent().getStringExtra("location");
 
+        rootView = findViewById(R.id.rootview);
         initSearchCard();
         initRecyclerView();
 
@@ -176,14 +176,24 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     public void onItemLongClick(View view, final Item item) {
 
-        OnDialogClickListener onDialogClickListener = new OnDialogClickListener(this, item);
-        new AlertDialog.Builder(ResultActivity.this)
-                .setMessage("添加到收藏列表")
-                .setTitle("收藏？")
-                .setPositiveButton("确认", onDialogClickListener)
-                .setNegativeButton("取消", onDialogClickListener)
-                .create()
-                .show();
+        ExecutorUtils.execute(new Runnable() {
+            @Override
+            public void run() {
+                ItemDao.put(item);
+            }
+        });
+
+        Snackbar.make(rootView, R.string.SNACK_FAV, Snackbar.LENGTH_LONG).setAction(R.string.ACTION_UNDO, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ExecutorUtils.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        ItemDao.remove(item);
+                    }
+                });
+            }
+        }).show();
     }
 
     @Override
@@ -278,39 +288,5 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
         public abstract void onShow();
 
         public abstract void onHide();
-    }
-
-    class OnDialogClickListener implements DialogInterface.OnClickListener {
-        private final Item item;
-        private final Activity activity;
-
-        public OnDialogClickListener(Activity activity, Item item) {
-            super();
-            this.item = item;
-            this.activity = activity;
-        }
-
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-            switch (which) {
-                case Dialog.BUTTON_NEGATIVE:
-                    break;
-                case Dialog.BUTTON_POSITIVE:
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ItemDao.put(item);
-                            activity.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(activity, R.string.toast_save_succeed, Toast.LENGTH_SHORT)
-                                            .show();
-                                }
-                            });
-                        }
-                    }).start();
-                    break;
-            }
-        }
     }
 }

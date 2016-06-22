@@ -11,4 +11,6 @@
     <string name="action_fav">Favorite</string>
     <string name="toast_save_succeed">save succeed</string>
     <string name="action_delete">delete</string>
+    <string name="SNACK_FAV">Added to favoritelist</string>
+    <string name="ACTION_UNDO">UNDO</string>
 </resources>
