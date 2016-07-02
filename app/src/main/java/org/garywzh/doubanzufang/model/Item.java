@@ -26,7 +26,7 @@ public class Item {
     }
 
     public static String buildUrlFromId(String tid) {
-        return "http://www.douban.com/group/topic/" + tid;
+        return "https://m.douban.com/group/topic/" + tid;
     }
 
     @Override
