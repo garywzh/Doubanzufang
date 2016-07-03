@@ -4,9 +4,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,19 +18,31 @@ import android.widget.Toast;
 
 import com.umeng.analytics.MobclickAgent;
 
+import org.garywzh.doubanzufang.MyApplication;
 import org.garywzh.doubanzufang.R;
 import org.garywzh.doubanzufang.dao.ItemDao;
 import org.garywzh.doubanzufang.helper.CustomTabsHelper;
 import org.garywzh.doubanzufang.model.Item;
 import org.garywzh.doubanzufang.model.ResponseBean;
+import org.garywzh.doubanzufang.network.NetworkHelper;
 import org.garywzh.doubanzufang.ui.adapter.ItemAdapter;
-import org.garywzh.doubanzufang.ui.loader.AsyncTaskLoader;
-import org.garywzh.doubanzufang.ui.loader.ItemListLoader;
 import org.garywzh.doubanzufang.ui.widget.DividerItemDecoration;
 import org.garywzh.doubanzufang.util.ExecutorUtils;
 import org.garywzh.doubanzufang.util.LogUtils;
 
-public class ResultActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<AsyncTaskLoader.LoaderResult<ResponseBean>>, ItemAdapter.OnItemActionListener {
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
+import rx.Subscriber;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
+
+public class ResultActivity extends AppCompatActivity implements ItemAdapter.OnItemActionListener {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private LinearLayoutManager linearLayoutManager;
@@ -46,21 +56,22 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
     public boolean noMore = false;
     private CardView searchCard;
 
+    private List<Item> mItems;
+    private Subscription mSubscription;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
 
         mLocation = getIntent().getStringExtra("location");
+        mSp = "0";
+        mItems = new ArrayList<>();
 
         rootView = findViewById(R.id.rootview);
         initSearchCard();
         initRecyclerView();
-
-        mSp = "0";
-
-        onLoading = true;
-        getSupportLoaderManager().initLoader(0, null, this);
     }
 
     private void initSearchCard() {
@@ -73,21 +84,21 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
         searchEditText.setTextColor(ContextCompat.getColor(this, R.color.search_text));
         searchEditText.setHintTextColor(ContextCompat.getColor(this, R.color.hint_text));
 
-        searchView.setQueryHint("输入地点");
+        searchView.setQueryHint(getString(R.string.hint_searchview));
         searchView.setQuery(mLocation, false);
         searchView.clearFocus();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 if (query.isEmpty()) {
-                    Toast.makeText(getBaseContext(), "请输入地点", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getBaseContext(), R.string.toast_searchview_tip, Toast.LENGTH_SHORT).show();
                     return false;
                 }
 
                 searchView.clearFocus();
                 mLocation = query;
                 mSp = "0";
-                getLoader().setParams(mLocation, mSp);
+                loadData();
                 return false;
             }
 
@@ -127,39 +138,98 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     @Override
-    public Loader<AsyncTaskLoader.LoaderResult<ResponseBean>> onCreateLoader(int id, Bundle args) {
-        return new ItemListLoader(this, mLocation);
+    protected void onStart() {
+        super.onStart();
+        loadData();
+    }
+
+    private void loadData() {
+        mSubscription = NetworkHelper.getItemsService()
+                .getItems(mLocation, mSp)
+                .doOnSubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        onLoading = true;
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .doOnNext(new Action1<ResponseBean>() {
+                    @Override
+                    public void call(ResponseBean responseBean) {
+                        if (mSp.equals("0")) {
+                            mItems.clear();
+                            requireScrollToTop = true;
+                        }
+
+                        final List<Item> items = responseBean.items;
+
+                        if (items.size() == 0) {
+                            noMore = true;
+                        } else {
+                            if (items.size() < 100) {
+                                noMore = true;
+                            }
+                            mSp = items.get(items.size() - 1).tid;
+                            mItems.addAll(items);
+
+                            /*remove duplicates*/
+                            final Set<Item> setItems = new LinkedHashSet<>(mItems);
+                            mItems.clear();
+                            mItems.addAll(setItems);
+
+                            responseBean.items = mItems;
+                        }
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<ResponseBean>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        mAdapter.setShowProgressBar(false);
+                        Toast.makeText(MyApplication.getInstance(), R.string.toast_network_error, Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onNext(ResponseBean responseBean) {
+                        if (requireScrollToTop) {
+                            linearLayoutManager.scrollToPositionWithOffset(0, 0);
+                            requireScrollToTop = false;
+                        }
+
+                        if (noMore) {
+                            mAdapter.setShowProgressBar(false);
+                        }
+                        mAdapter.setDataSource(responseBean);
+                        onLoading = false;
+                    }
+                });
     }
 
     @Override
-    public void onLoadFinished(Loader<AsyncTaskLoader.LoaderResult<ResponseBean>> loader, AsyncTaskLoader.LoaderResult<ResponseBean> result) {
-        if (result.hasException()) {
-            Toast.makeText(this, "结果列表加载失败 - 网络错误", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (requireScrollToTop) {
-            linearLayoutManager.scrollToPositionWithOffset(0, 0);
-            requireScrollToTop = false;
-        }
-
-        if (noMore) {
-            mAdapter.setShowProgressBar(false);
-        }
-        mAdapter.setDataSource(result.mResult);
-
-        onLoading = false;
-        LogUtils.d(TAG, "onLoadFinished called");
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
     }
 
     @Override
-    public void onLoaderReset(Loader<AsyncTaskLoader.LoaderResult<ResponseBean>> loader) {
-        mAdapter.setDataSource(null);
-        LogUtils.d(TAG, "onLoaderReset called");
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
-    private ItemListLoader getLoader() {
-        return (ItemListLoader) getSupportLoaderManager().<AsyncTaskLoader.LoaderResult<ResponseBean>>getLoader(0);
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mSubscription != null && !mSubscription.isUnsubscribed()) {
+            mSubscription.unsubscribe();
+            mSubscription = null;
+        }
     }
 
     @Override
@@ -194,18 +264,6 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
                 });
             }
         }).show();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        MobclickAgent.onResume(this);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        MobclickAgent.onPause(this);
     }
 
     public abstract class HidingScrollListener extends RecyclerView.OnScrollListener {
@@ -251,12 +309,7 @@ public class ResultActivity extends AppCompatActivity implements LoaderManager.L
 
                     LogUtils.d(TAG, "scrolled to bottom, loading more");
                     onLoading = true;
-
-                    final ItemListLoader loader = getLoader();
-                    if (loader == null) {
-                        return;
-                    }
-                    loader.setParams(mLocation, mSp);
+                    loadData();
                 }
             }
         }
