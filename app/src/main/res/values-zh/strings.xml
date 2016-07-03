@@ -13,4 +13,7 @@
     <string name="action_delete">删除</string>
     <string name="SNACK_FAV">已添加到收藏列表</string>
     <string name="ACTION_UNDO">撤销</string>
+    <string name="toast_network_error">网络错误</string>
+    <string name="hint_searchview">输入地点</string>
+    <string name="toast_searchview_tip">请输入地点</string>
 </resources>

@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         searchEditText.setTextColor(ContextCompat.getColor(this, R.color.search_text));
         searchEditText.setHintTextColor(ContextCompat.getColor(this, R.color.hint_text));
 
-        searchView.setQueryHint("输入地点");
+        searchView.setQueryHint(getString(R.string.hint_searchview));
 //        test
 //        searchView.setQuery(TEST_LOCATION, false);
 
@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         String location = searchView.getQuery().toString();
 
         if (location.isEmpty()) {
-            Toast.makeText(getBaseContext(), "请输入地点", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getBaseContext(), getString(R.string.toast_searchview_tip), Toast.LENGTH_SHORT).show();
             return;
         }
 

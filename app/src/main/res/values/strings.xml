@@ -5,12 +5,15 @@
     <string name="title_activity_result">ResultActivity</string>
     <string name="search">SEARCH</string>
     <string name="title_update">"Data update time: "</string>
-    <string name="subhead">gathering douban groups rending imformation</string>
+    <string name="subhead">gathering douban groups rending information</string>
     <string name="toast_loading_more">Loading more</string>
     <string name="title_activity_fav">Favorite</string>
     <string name="action_fav">Favorite</string>
     <string name="toast_save_succeed">save succeed</string>
     <string name="action_delete">delete</string>
-    <string name="SNACK_FAV">Added to favoritelist</string>
+    <string name="SNACK_FAV">Added to favorite list</string>
     <string name="ACTION_UNDO">UNDO</string>
+    <string name="toast_network_error">Network error</string>
+    <string name="hint_searchview">Input location</string>
+    <string name="toast_searchview_tip">Please input location</string>
 </resources>
